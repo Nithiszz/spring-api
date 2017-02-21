@@ -6,11 +6,13 @@ import (
 	"github.com/Nithiszz/sprint-api/pkg/api"
 )
 
+const kindBook = "Book"
+
 // Book model is the type for save to database
 type bookModel struct {
-	ID          int
+	ID          int64 `datastore:"-"`
 	Title       string
-	Description string
+	Description string `datastore:",noindex"`
 	Author      string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

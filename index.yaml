@@ -1,0 +1,9 @@
+indexes:
+- kind: Book
+  properties:
+  - name: Author
+  - name: CreatedAt
+    direction: desc
+
+
+        

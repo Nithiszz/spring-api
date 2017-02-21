@@ -12,7 +12,7 @@ type BookService interface {
 
 // BookRequest is the book type for parse from user's Request
 type BookRequest struct {
-	ID          int    `json:"id"`
+	ID          int64  `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Author      string `json:"author"`
@@ -20,7 +20,7 @@ type BookRequest struct {
 
 // BookResponse is the book type for return to user
 type BookResponse struct {
-	ID          int    `json:"id"`
+	ID          int64  `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Author      string `json:"author"`
