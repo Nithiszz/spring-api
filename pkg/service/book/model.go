@@ -4,24 +4,24 @@ import (
 	"time"
 
 	"github.com/Nithiszz/sprint-api/pkg/api"
+	"github.com/acoshift/ds"
 )
 
 const kindBook = "Book"
 
 // Book model is the type for save to database
 type bookModel struct {
-	ID          int64 `datastore:"-"`
+	ds.Model
+	ds.StampModel
 	Title       string
 	Description string `datastore:",noindex"`
 	Author      string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
 }
 
 func bookToResponse(book *bookModel) *api.BookResponse {
 	return &api.BookResponse{
 
-		ID:          book.ID,
+		ID:          book.ID(),
 		Title:       book.Title,
 		Description: book.Description,
 		Author:      book.Author,

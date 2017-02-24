@@ -2,13 +2,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"cloud.google.com/go/datastore"
 
 	"github.com/Nithiszz/sprint-api/pkg/app"
 	"github.com/Nithiszz/sprint-api/pkg/service/book"
+	"github.com/acoshift/ds"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
@@ -35,7 +38,7 @@ func main() {
 
 	tokenSource := googleConfig.TokenSource(context.Background())
 
-	client, err := datastore.NewClient(context.Background(), "sprintapi-159415", option.WithTokenSource(tokenSource))
+	client, err := ds.NewClient(context.Background(), "sprintapi-159415", option.WithTokenSource(tokenSource))
 
 	if err != nil {
 		log.Fatal(err)
@@ -45,5 +48,35 @@ func main() {
 	app.RegisterBookService(mux, book.New(book.Config{
 		Datastore: client,
 	}))
-	log.Fatal(http.ListenAndServe(":8080", mux))
+
+	handler := LogMiddleware(mux)
+
+	log.Fatal(http.ListenAndServe(":8080", handler))
+}
+
+//LogResponseWriter result
+type LogResponseWriter struct {
+	http.ResponseWriter
+	header int
+}
+
+func (w *LogResponseWriter) WriteHeader(v int) {
+	w.header = v
+	w.ResponseWriter.WriteHeader(v)
+}
+
+// LogMiddleware Log request server
+func LogMiddleware(h http.Handler) http.Handler {
+	// init var for LogMiddleware
+	log.Println("log LogMiddleware inited!")
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		path := r.URL.Path
+		tw := &LogResponseWriter{ResponseWriter: w}
+		ip := r.RemoteAddr
+		h.ServeHTTP(tw, r)
+		end := time.Now()
+		fmt.Printf("%s | %3d | %13v | %s | %s | %s\n", end.Format(time.RFC3339), tw.header, end.Sub(start), ip, r.Method, path)
+
+	})
 }
